@@ -5,9 +5,10 @@ project. It tracks the history of what has been built and links to the detailed
 plans.
 
 ## Active Plans
-*(None)*
 
 ## Completed Plans
+- [[202601281005-implementation-plan-prefix-cmd-whitelisting.md]] - Prefix-Based
+  Command Whitelisting for `cmd_runner` (Completed: 2026-01-28)
 - [[202601280133-implementation-plan-fuzzy-cmd-approval.md]] - Fuzzy Command
   Approval for `cmd_runner` (Completed: 2026-01-28)
 

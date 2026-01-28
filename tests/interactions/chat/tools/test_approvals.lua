@@ -614,4 +614,137 @@ T["similarity approvals"]["works in yolo mode when allowed_in_yolo_mode is false
   h.eq(result, true)
 end
 
+T["prefix whitelisting"] = new_set()
+
+T["prefix whitelisting"]["approves whitelisted prefix"] = function()
+  child.lua([[
+    package.loaded['codecompanion.config'].interactions.chat.tools.cmd_runner = {
+      opts = {
+        require_cmd_approval = true,
+        allowed_prefixes = { "git", "make" },
+      },
+    }
+  ]])
+
+  local result = child.lua([[
+    return Approvals:is_approved(1, { tool_name = 'cmd_runner', cmd = 'git status' })
+  ]])
+
+  h.eq(result, true)
+end
+
+T["prefix whitelisting"]["rejects non-whitelisted prefix"] = function()
+  child.lua([[
+    package.loaded['codecompanion.config'].interactions.chat.tools.cmd_runner = {
+      opts = {
+        require_cmd_approval = true,
+        allowed_prefixes = { "git" },
+      },
+    }
+  ]])
+
+  local result = child.lua([[
+    return Approvals:is_approved(1, { tool_name = 'cmd_runner', cmd = 'rm -rf /' })
+  ]])
+
+  h.eq(result, false)
+end
+
+T["prefix whitelisting"]["rejects whitelisted prefix with dangerous operator"] = function()
+  child.lua([[
+    package.loaded['codecompanion.config'].interactions.chat.tools.cmd_runner = {
+      opts = {
+        require_cmd_approval = true,
+        allowed_prefixes = { "git" },
+      },
+    }
+  ]])
+
+  local result = child.lua([[
+    return Approvals:is_approved(1, { tool_name = 'cmd_runner', cmd = 'git status && rm -rf /' })
+  ]])
+
+  h.eq(result, false)
+end
+
+T["prefix whitelisting"]["caches approved whitelisted command"] = function()
+  child.lua([[
+    package.loaded['codecompanion.config'].interactions.chat.tools.cmd_runner = {
+      opts = {
+        require_cmd_approval = true,
+        allowed_prefixes = { "git" },
+      },
+    }
+  ]])
+
+  local result = child.lua([[
+    local first_check = Approvals:is_approved(1, { tool_name = 'cmd_runner', cmd = 'git log' })
+
+    -- Remove the prefix from whitelist
+    package.loaded['codecompanion.config'].interactions.chat.tools.cmd_runner.opts.allowed_prefixes = {}
+
+    -- Should still be approved because it was cached
+    local second_check = Approvals:is_approved(1, { tool_name = 'cmd_runner', cmd = 'git log' })
+
+    return { first = first_check, second = second_check }
+  ]])
+
+  h.eq(result.first, true)
+  h.eq(result.second, true)
+end
+
+T["prefix whitelisting"]["rejects prefix shadowing"] = function()
+  child.lua([[
+    package.loaded['codecompanion.config'].interactions.chat.tools.cmd_runner = {
+      opts = {
+        require_cmd_approval = true,
+        allowed_prefixes = { "git" },
+      },
+    }
+  ]])
+
+  local result = child.lua([[
+    -- 'git' is whitelisted, but 'git-status' (no space) should be rejected
+    return Approvals:is_approved(1, { tool_name = 'cmd_runner', cmd = 'git-status' })
+  ]])
+
+  h.eq(result, false)
+end
+
+T["prefix whitelisting"]["rejects whitelisted prefix with subshell"] = function()
+  child.lua([[
+    package.loaded['codecompanion.config'].interactions.chat.tools.cmd_runner = {
+      opts = {
+        require_cmd_approval = true,
+        allowed_prefixes = { "echo" },
+      },
+    }
+  ]])
+
+  local result = child.lua([[
+    return Approvals:is_approved(1, { tool_name = 'cmd_runner', cmd = 'echo $(rm -rf /)' })
+  ]])
+
+  h.eq(result, false)
+end
+
+T["prefix whitelisting"]["rejects whitelisted prefix with redirection"] = function()
+  child.lua([[
+    package.loaded['codecompanion.config'].interactions.chat.tools.cmd_runner = {
+      opts = {
+        require_cmd_approval = true,
+        allowed_prefixes = { "echo" },
+      },
+    }
+  ]])
+
+  local result = child.lua([[
+    return Approvals:is_approved(1, { tool_name = 'cmd_runner', cmd = 'echo "hack" > file.txt' })
+  ]])
+
+  h.eq(result, false)
+end
+
 return T
+
+

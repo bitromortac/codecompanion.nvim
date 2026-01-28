@@ -75,16 +75,16 @@ end
 ---@param bufnr number
 ---@param args { cmd?: string, tool_name?: string }
 function Approvals:is_approved(bufnr, args)
+  if not approved[bufnr] then
+    approved[bufnr] = {}
+  end
   local approvals = approved[bufnr]
   log:debug("Approvals for %d: %s", bufnr, approvals)
-  if not approvals then
-    return false
-  end
 
   local tool_cfg = args
-      and args.tool_name
-      and config.interactions.chat.tools
-      and config.interactions.chat.tools[args.tool_name]
+    and args.tool_name
+    and config.interactions.chat.tools
+    and config.interactions.chat.tools[args.tool_name]
 
   -- Check if tool requires command-level approval first
   if tool_cfg and tool_cfg.opts and tool_cfg.opts.require_cmd_approval then
@@ -96,10 +96,31 @@ function Approvals:is_approved(bufnr, args)
       end
     end
 
+    -- Check for whitelisted prefixes if tool is cmd_runner
+    if args.tool_name == "cmd_runner" and tool_cfg.opts.allowed_prefixes then
+      -- Check for dangerous operators, subshells, redirections, and newlines
+      local dangerous_pattern = "[;&|<>%$`\n\r]"
+      if not args.cmd:match(dangerous_pattern) then
+        for _, prefix in ipairs(tool_cfg.opts.allowed_prefixes) do
+          -- Ensure prefix is followed by space or is the end of the string (binary isolation)
+          local match_pattern = "^" .. prefix .. "[%s$]"
+          if args.cmd:match(match_pattern) then
+            log:debug("Auto-approving command '%s' based on whitelisted prefix '%s'", args.cmd, prefix)
+            if not approvals[args.tool_name] then
+              approvals[args.tool_name] = {}
+            end
+            approvals[args.tool_name][args.cmd] = true
+            return true
+          end
+        end
+      end
+    end
+
     -- Not in yolo mode, check if this specific command was approved
     if not approvals[args.tool_name] then
       return false
     end
+
     local cmd_approval = approvals[args.tool_name][args.cmd]
     if cmd_approval == true then
       return true
@@ -107,9 +128,9 @@ function Approvals:is_approved(bufnr, args)
 
     -- Check for similarity if threshold is set and tool is cmd_runner
     if
-        args.tool_name == "cmd_runner"
-        and tool_cfg.opts.approval_similarity_threshold
-        and type(tool_cfg.opts.approval_similarity_threshold) == "number"
+      args.tool_name == "cmd_runner"
+      and tool_cfg.opts.approval_similarity_threshold
+      and type(tool_cfg.opts.approval_similarity_threshold) == "number"
     then
       local threshold = tool_cfg.opts.approval_similarity_threshold
 

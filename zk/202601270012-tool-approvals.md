@@ -18,9 +18,10 @@ of the chat session.
 For sensitive tools like `cmd_runner`, the user must approve *each unique
 command* (e.g., `ls -la`). Subsequent requests for the same command are
 auto-approved. The system also supports
-[[202601280845-fuzzy-command-approval.md]], allowing for the auto-approval of
-commands that are similar to previously approved ones, provided they meet
-security constraints.
+[[202601280845-fuzzy-command-approval.md]] and
+[[202601281000-prefix-based-command-whitelisting.md]], allowing for the
+auto-approval of commands that are similar to previously approved ones or start
+with trusted prefixes, provided they meet security constraints.
 
 ## YOLO Mode (You Only Look Once)
 

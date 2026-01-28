@@ -5,9 +5,11 @@ framework, emphasizing a headless, automated testing strategy.
 
 ## Testing Infrastructure
 
-1. **Orchestration:** The `Makefile` serves as the entry point for running tests.
+1. **Orchestration:** The `Makefile` serves as the entry point for running
+   tests.
    - `make test`: Runs the full test suite.
-   - `make test_file FILE=...`: Runs a specific test file.
+   - `make test_file FILE=...`: Runs a specific test file. This is preferred
+     over running `make test` as it is much faster.
 2. **Environment:** A `minimal_init.lua` script sets up a clean, isolated Neovim
    environment.
    - Manages dependencies (`mini.nvim`, `plenary.nvim`, `nvim-treesitter`).
