@@ -1,0 +1,6 @@
+root: "zk"
+federation:
+  zktool:
+    path: "/home/user/Projects/internal/zktool/zk"
+    allowed_tags:
+      - "#best-practices"
