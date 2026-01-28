@@ -36,6 +36,10 @@ The architecture is divided into several key systems:
   guidelines.
   - [[202601270001-coding-standards.md]]
 
+## Development Progress
+Planned feature can be found here
+[[202601161200-zktool-implementation-roadmap.md]].
+
 ## Feature Backlog
 We plan feature implementation using
 [[202601271000-implementation-plan-guidelines.md]].

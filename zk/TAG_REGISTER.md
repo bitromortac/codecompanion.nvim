@@ -8,6 +8,7 @@
 - #agents
 - #architecture
 - #automation
+- #backlog
 - #best-practices
 - #buffer-management
 - #chat-buffer
@@ -18,6 +19,7 @@
 - #customization
 - #event-loop
 - #extensions
+- #features
 - #integration
 - #interactions
 - #interoperability
@@ -41,6 +43,7 @@
 - #quality-assurance
 - #refactoring
 - #rendering
+- #roadmap
 - #security
 - #setup
 - #standard
@@ -53,6 +56,7 @@
 - #ux
 - #workflow
 - #zettelkasten
+- (Untagged)
 
 ---
 
@@ -96,6 +100,11 @@
 
 - [[202601270012-tool-approvals.md]]
 - [[202601270010-tool-system.md]]
+
+## #backlog
+**Related:** #features (1), #planning (1)
+
+- [[202601271230-feature-backlog.md]]
 
 ## #best-practices
 **Related:** #maintenance (1), #planning (1), #process (1), #refactoring (1), #standard (1)
@@ -148,6 +157,11 @@
 **Related:** #architecture (1), #modularity (1), #plugins (1)
 
 - [[202601270007-extensions-system.md]]
+
+## #features
+**Related:** #backlog (1), #planning (1)
+
+- [[202601271230-feature-backlog.md]]
 
 ## #integration
 **Related:** #neovim (1), #plugins (1), #providers (1)
@@ -212,9 +226,11 @@
 - [[202601270011-chat-ui-rendering.md]]
 
 ## #planning
-**Related:** #best-practices (1), #process (1), #standard (1)
+**Related:** #process (2), #backlog (1), #best-practices (1), #features (1), #roadmap (1)
 
+- [[202601271230-feature-backlog.md]]
 - [[202601271000-implementation-plan-guidelines.md]]
+- [[202601161200-zktool-implementation-roadmap.md]]
 
 ## #plugin
 **Related:** #architecture (1), #llm (1), #neovim (1)
@@ -228,9 +244,10 @@
 - [[202601270008-providers-system.md]]
 
 ## #process
-**Related:** #best-practices (1), #planning (1), #standard (1)
+**Related:** #planning (2), #best-practices (1), #roadmap (1), #standard (1)
 
 - [[202601271000-implementation-plan-guidelines.md]]
+- [[202601161200-zktool-implementation-roadmap.md]]
 
 ## #productivity
 **Related:** #prompts (1), #workflow (1)
@@ -266,6 +283,11 @@
 **Related:** #buffer-management (1), #neovim-ui (1), #ui (1)
 
 - [[202601270011-chat-ui-rendering.md]]
+
+## #roadmap
+**Related:** #planning (1), #process (1)
+
+- [[202601161200-zktool-implementation-roadmap.md]]
 
 ## #security
 **Related:** #automation (2), #tools (2), #agent (1), #agents (1)
@@ -334,3 +356,6 @@
 **Related:** #best-practices (1), #maintenance (1), #refactoring (1)
 
 - [[202601170934-zettel-smells.md]]
+
+## (Untagged)
+- [[202601280133-implementation-plan-fuzzy-cmd-approval.md]]
