@@ -5,11 +5,11 @@ project. It tracks the history of what has been built and links to the detailed
 plans.
 
 ## Active Plans
-- [[202601280133-implementation-plan-fuzzy-cmd-approval.md]] - Fuzzy Command
-  Approval for `cmd_runner`
+*(None)*
 
 ## Completed Plans
-*(None yet)*
+- [[202601280133-implementation-plan-fuzzy-cmd-approval.md]] - Fuzzy Command
+  Approval for `cmd_runner` (Completed: 2026-01-28)
 
 ## Backlog
 - See [[202601271230-feature-backlog.md]] for upcoming features.

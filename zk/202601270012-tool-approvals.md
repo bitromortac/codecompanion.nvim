@@ -1,16 +1,26 @@
 # Approvals Gatekeep Execution
 
-The Tool Approval System acts as a security gatekeeper, ensuring that the AI agent
-cannot execute potentially harmful actions (like deleting files or running shell
-commands) without user consent.
+The Tool Approval System acts as a security gatekeeper, ensuring that the AI
+agent cannot execute potentially harmful actions (like deleting files or running
+shell commands) without user consent.
 
 ## Approval Levels
 
-1. **Tool-Level Approval:** The user approves the use of a specific tool (e.g.,
-   `read_file`) for the duration of the chat session.
-2. **Command-Level Approval:** For sensitive tools like `cmd_runner`, the user must
-   approve *each unique command* (e.g., `ls -la`). Subsequent requests for the
-   same command are auto-approved.
+The system employs two levels of approval to balance security and usability.
+
+### Tool-Level Approval
+
+The user approves the use of a specific tool (e.g., `read_file`) for the duration
+of the chat session.
+
+### Command-Level Approval
+
+For sensitive tools like `cmd_runner`, the user must approve *each unique
+command* (e.g., `ls -la`). Subsequent requests for the same command are
+auto-approved. The system also supports
+[[202601280845-fuzzy-command-approval.md]], allowing for the auto-approval of
+commands that are similar to previously approved ones, provided they meet
+security constraints.
 
 ## YOLO Mode (You Only Look Once)
 
@@ -27,7 +37,8 @@ are automatically approved.
 Tags: #security #tools #automation #agent
 
 ## References
-- Is a component of: [[20260127000010-codecompanion-tool-system.md]]
+- Is a component of: [[202601270010-tool-system.md]]
+- Utilizes: [[202601280845-fuzzy-command-approval.md]]
 
 ## Backlinks
 - [[202601270000-Codecompanion-architecture-overview.md]]
