@@ -483,4 +483,135 @@ T["command-level approvals"]["yolo mode overrides cmd approval requirement"] = f
   h.eq(approved, true)
 end
 
+T["similarity approvals"] = new_set()
+
+T["similarity approvals"]["approves similar command"] = function()
+  child.lua([[
+    package.loaded['codecompanion.config'].interactions.chat.tools.cmd_runner = {
+      opts = {
+        require_cmd_approval = true,
+        approval_similarity_threshold = 0.8,
+      },
+    }
+
+    Approvals:always(1, { tool_name = 'cmd_runner', cmd = 'git status' })
+  ]])
+
+  local result = child.lua([[
+    -- 'git statsu' should be similar enough to 'git status'
+    return Approvals:is_approved(1, { tool_name = 'cmd_runner', cmd = 'git statsu' })
+  ]])
+
+  h.eq(result, true)
+end
+
+T["similarity approvals"]["rejects dissimilar command"] = function()
+  child.lua([[
+    package.loaded['codecompanion.config'].interactions.chat.tools.cmd_runner = {
+      opts = {
+        require_cmd_approval = true,
+        approval_similarity_threshold = 0.8,
+      },
+    }
+
+    Approvals:always(1, { tool_name = 'cmd_runner', cmd = 'git status' })
+  ]])
+
+  local result = child.lua([[
+    return Approvals:is_approved(1, { tool_name = 'cmd_runner', cmd = 'git commit' })
+  ]])
+
+  h.eq(result, false)
+end
+
+T["similarity approvals"]["rejects command with dangerous operators"] = function()
+  child.lua([[
+    package.loaded['codecompanion.config'].interactions.chat.tools.cmd_runner = {
+      opts = {
+        require_cmd_approval = true,
+        approval_similarity_threshold = 0.1, -- Very low threshold
+      },
+    }
+
+    Approvals:always(1, { tool_name = 'cmd_runner', cmd = 'ls -la' })
+  ]])
+
+  local result = child.lua([[
+    -- Even with low threshold, this should fail because of '&&'
+    return Approvals:is_approved(1, { tool_name = 'cmd_runner', cmd = 'ls -la && rm -rf /' })
+  ]])
+
+  h.eq(result, false)
+end
+
+T["similarity approvals"]["rejects command with pipe"] = function()
+  child.lua([[
+    package.loaded['codecompanion.config'].interactions.chat.tools.cmd_runner = {
+      opts = {
+        require_cmd_approval = true,
+        approval_similarity_threshold = 0.1,
+      },
+    }
+
+    Approvals:always(1, { tool_name = 'cmd_runner', cmd = 'cat file' })
+  ]])
+
+  local result = child.lua([[
+    return Approvals:is_approved(1, { tool_name = 'cmd_runner', cmd = 'cat file | grep secret' })
+  ]])
+
+  h.eq(result, false)
+end
+
+T["similarity approvals"]["caches approved similar command"] = function()
+  child.lua([[
+    package.loaded['codecompanion.config'].interactions.chat.tools.cmd_runner = {
+      opts = {
+        require_cmd_approval = true,
+        approval_similarity_threshold = 0.8,
+      },
+    }
+
+    Approvals:always(1, { tool_name = 'cmd_runner', cmd = 'echo hello' })
+  ]])
+
+  local result = child.lua([[
+    local first_check = Approvals:is_approved(1, { tool_name = 'cmd_runner', cmd = 'echo hell' })
+
+    -- Disable similarity check effectively by setting threshold > 1
+    package.loaded['codecompanion.config'].interactions.chat.tools.cmd_runner.opts.approval_similarity_threshold = 1.1
+
+    -- Should still be approved because it was cached
+    local second_check = Approvals:is_approved(1, { tool_name = 'cmd_runner', cmd = 'echo hell' })
+
+    return { first = first_check, second = second_check }
+  ]])
+
+  h.eq(result.first, true)
+  h.eq(result.second, true)
+end
+
+
+T["similarity approvals"]["works in yolo mode when allowed_in_yolo_mode is false"] = function()
+  child.lua([[
+    package.loaded['codecompanion.config'].interactions.chat.tools.cmd_runner = {
+      opts = {
+        require_cmd_approval = true,
+        allowed_in_yolo_mode = false,
+        approval_similarity_threshold = 0.8,
+      },
+    }
+
+    Approvals:always(1, { tool_name = 'cmd_runner', cmd = 'git status' })
+    Approvals:toggle_yolo_mode(1)
+  ]])
+
+  local result = child.lua([[
+    -- Should pass via similarity check even though YOLO is on but restricted
+    return Approvals:is_approved(1, { tool_name = 'cmd_runner', cmd = 'git statsu' })
+  ]])
+
+  h.eq(result, true)
+end
+
 return T

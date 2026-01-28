@@ -37,6 +37,7 @@
 
 local config = require("codecompanion.config")
 local log = require("codecompanion.utils.log")
+local string_utils = require("codecompanion.utils.string")
 
 ---@type table<string, string[]>
 local approved = {}
@@ -81,19 +82,18 @@ function Approvals:is_approved(bufnr, args)
   end
 
   local tool_cfg = args
-    and args.tool_name
-    and config.interactions.chat.tools
-    and config.interactions.chat.tools[args.tool_name]
+      and args.tool_name
+      and config.interactions.chat.tools
+      and config.interactions.chat.tools[args.tool_name]
 
   -- Check if tool requires command-level approval first
   if tool_cfg and tool_cfg.opts and tool_cfg.opts.require_cmd_approval then
     -- Yolo mode overrides cmd approval requirement
     if approvals.yolo_mode then
       -- But still respect allowed_in_yolo_mode = false
-      if tool_cfg.opts.allowed_in_yolo_mode == false then
-        return false
+      if tool_cfg.opts.allowed_in_yolo_mode ~= false then
+        return true
       end
-      return true
     end
 
     -- Not in yolo mode, check if this specific command was approved
@@ -104,6 +104,41 @@ function Approvals:is_approved(bufnr, args)
     if cmd_approval == true then
       return true
     end
+
+    -- Check for similarity if threshold is set and tool is cmd_runner
+    if
+        args.tool_name == "cmd_runner"
+        and tool_cfg.opts.approval_similarity_threshold
+        and type(tool_cfg.opts.approval_similarity_threshold) == "number"
+    then
+      local threshold = tool_cfg.opts.approval_similarity_threshold
+
+      -- Check for dangerous operators in the new command
+      -- If any of these are present, we skip the similarity check
+      local dangerous_pattern = "[;&|]"
+      if args.cmd:match(dangerous_pattern) then
+        return false
+      end
+
+      for approved_cmd, _ in pairs(approvals[args.tool_name]) do
+        -- Skip similarity check if the approved command itself was dangerous (shouldn't happen but safe guard)
+        if not approved_cmd:match(dangerous_pattern) then
+          local similarity = string_utils.similarity_ratio(args.cmd, approved_cmd)
+          if similarity >= threshold then
+            log:debug(
+              "Auto-approving command '%s' based on similarity to '%s' (%.2f)",
+              args.cmd,
+              approved_cmd,
+              similarity
+            )
+            -- Cache the new command as approved to speed up future checks
+            approvals[args.tool_name][args.cmd] = true
+            return true
+          end
+        end
+      end
+    end
+
     return false
   end
 

@@ -132,6 +132,7 @@ local defaults = {
           description = "Run shell commands initiated by the LLM",
           opts = {
             allowed_in_yolo_mode = false,
+            approval_similarity_threshold = 0.8,
             require_approval_before = true,
             require_cmd_approval = true,
           },

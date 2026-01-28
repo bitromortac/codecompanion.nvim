@@ -281,7 +281,11 @@ function Orchestrator:setup_next_tool(input)
 
       -- Schedule the confirmation dialog to ensure UI is ready
       vim.schedule(function()
-        local choice = ui_utils.confirm(prompt, { "1 Allow always", "2 Allow once", "3 Reject", "4 Cancel" })
+        local choices = { "1 Allow always", "2 Allow once", "3 Reject", "4 Cancel" }
+        if self.tool.name == "cmd_runner" and self.tool.opts.approval_similarity_threshold then
+          choices[1] = "1 Allow always/similar"
+        end
+        local choice = ui_utils.confirm(prompt, choices)
         log:debug("[Orchestrator::setup_next_tool] User choice: %s", choice)
 
         -- Handle invalid/failed dialog (returns 0 or nil)
