@@ -5,6 +5,7 @@ project. It tracks the history of what has been built and links to the detailed
 plans.
 
 ## Active Plans
+*(None)*
 
 ## Completed Plans
 - [[202601281005-implementation-plan-prefix-cmd-whitelisting.md]] - Prefix-Based
@@ -19,3 +20,4 @@ Tags: #planning #roadmap #process
 
 ## References
 - Implements guidelines from: [[202601271000-implementation-plan-guidelines.md]]
+
