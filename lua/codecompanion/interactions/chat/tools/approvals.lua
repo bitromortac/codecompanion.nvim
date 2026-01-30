@@ -103,7 +103,9 @@ function Approvals:is_approved(bufnr, args)
       if not args.cmd:match(dangerous_pattern) then
         for _, prefix in ipairs(tool_cfg.opts.allowed_prefixes) do
           -- Ensure prefix is followed by space or is the end of the string (binary isolation)
-          local match_pattern = "^" .. prefix .. "[%s$]"
+          -- Escape magic characters in prefix to ensure literal match
+          local escaped_prefix = prefix:gsub("([^%w])", "%%%1")
+          local match_pattern = "^" .. escaped_prefix .. "[%s$]"
           if args.cmd:match(match_pattern) then
             log:debug("Auto-approving command '%s' based on whitelisted prefix '%s'", args.cmd, prefix)
             if not approvals[args.tool_name] then
