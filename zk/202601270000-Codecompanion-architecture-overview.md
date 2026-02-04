@@ -42,16 +42,19 @@ Planned feature can be found here
 
 ## Feature Backlog
 We plan feature implementation using
-[[202601271000-implementation-plan-guidelines.md]].
+[[shared/202601271000-implementation-plan-guidelines.md]].
 
 Tags: #architecture #neovim #plugin #llm
 
 ## References
 - Configuration details: [[202601270004-configuration-strategy.md]]
 - Protocol for agents: [[202601270014-acp-protocol.md]]
+- Backlog: [[202601271230-feature-backlog.md]]
 
 ## Backlinks
 - [[202601270001-coding-standards.md]]
+- [[shared/202601271000-implementation-plan-guidelines.md]]
+
 - [[202601270002-adapters-system.md]]
 - [[202601270003-interactions-system.md]]
 - [[202601270004-configuration-strategy.md]]
@@ -60,5 +63,6 @@ Tags: #architecture #neovim #plugin #llm
 - [[202601270007-extensions-system.md]]
 - [[202601270008-providers-system.md]]
 - [[202601270012-tool-approvals.md]]
-- [[202601270013-testing-framework.md]]
+- [[202602041230-testing-strategy-for-tools.md]]
+
 - [[202601270014-acp-protocol.md]]

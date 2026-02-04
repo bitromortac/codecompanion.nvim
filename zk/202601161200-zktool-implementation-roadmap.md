@@ -19,5 +19,4 @@ plans.
 Tags: #planning #roadmap #process
 
 ## References
-- Implements guidelines from: [[202601271000-implementation-plan-guidelines.md]]
-
+- Implements guidelines from: [[shared/202601271000-implementation-plan-guidelines.md]]

@@ -20,5 +20,4 @@ upon interruption, which needs to be addressed to maintain consistency.
 Tags: #planning #backlog #features
 
 ## References
-- Implementation process: [[202601271000-implementation-plan-guidelines.md]]
-
+- Implementation process: [[shared/202601271000-implementation-plan-guidelines.md]]
