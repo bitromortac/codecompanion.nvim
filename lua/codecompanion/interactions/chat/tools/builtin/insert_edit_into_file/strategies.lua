@@ -61,7 +61,11 @@ local M = {}
 ---@return string The content with replacement applied
 local function apply_line_replacement(content_lines, match, new_text)
   local new_content_lines = {}
-  local new_text_lines = vim.split(new_text, "\n", { plain = true })
+  local new_text_lines = {}
+
+  if new_text ~= "" then
+    new_text_lines = vim.split(new_text, "\n", { plain = true })
+  end
 
   -- Handle boundary markers specially
   if match.strategy == "start_marker" then
