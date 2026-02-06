@@ -28,6 +28,7 @@
 ---@field opts CodeCompanion.ChatArgs Store all arguments in this table
 ---@field settings? table The settings that are used in the adapter of the chat buffer
 ---@field subscribers table The subscribers to the chat buffer
+---@field injection_queue table<CodeCompanion.Chat.Message> The queue for messages injected while the chat is busy
 ---@field title? string The title of the chat buffer
 ---@field tokens? nil|number The number of tokens in the chat
 ---@field tools CodeCompanion.Tools The tools coordinator that executes available tools
@@ -415,6 +416,7 @@ function Chat.new(args)
     header_line = 1,
     from_prompt_library = args.from_prompt_library or false,
     id = id,
+    injection_queue = {},
     intro_message = args.intro_message or config.display.chat.intro_message,
     messages = args.messages or {},
     opts = args,
@@ -907,6 +909,41 @@ function Chat:remove_tagged_message(tag)
     :totable()
 end
 
+---Inject a message into the chat buffer
+---@param message string
+---@return nil
+function Chat:inject_message(message)
+  if self.status == "running" then
+    table.insert(self.injection_queue, {
+      role = config.constants.USER_ROLE,
+      content = message,
+    })
+    utils.notify("Feedback queued", vim.log.levels.INFO)
+    return
+  end
+
+  self:add_message({
+    role = config.constants.USER_ROLE,
+    content = message,
+  }, { visible = true })
+  self.cycle = self.cycle + 1
+end
+
+---Check the injection queue and add any messages to the chat buffer
+---@return nil
+function Chat:check_injection_queue()
+  if #self.injection_queue == 0 then
+    return
+  end
+
+  for _, message in ipairs(self.injection_queue) do
+    self:add_message(message, { visible = true })
+    self.cycle = self.cycle + 1
+  end
+
+  self.injection_queue = {}
+end
+
 ---Add a message to the message table
 ---@param data { role: string, content: string, reasoning?: CodeCompanion.Chat.Reasoning, tool_calls?: CodeCompanion.Chat.ToolCall[] }
 ---@param opts? table Options for the message
@@ -1180,6 +1217,7 @@ end
 ---@return nil
 function Chat:tools_done(opts)
   opts = opts or {}
+  self:check_injection_queue()
   return ready_chat_buffer(self, opts)
 end
 

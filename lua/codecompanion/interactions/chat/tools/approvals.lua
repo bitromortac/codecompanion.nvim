@@ -88,6 +88,7 @@ function Approvals:is_approved(bufnr, args)
 
   -- Check if tool requires command-level approval first
   if tool_cfg and tool_cfg.opts and tool_cfg.opts.require_cmd_approval then
+
     -- Yolo mode overrides cmd approval requirement
     if approvals.yolo_mode then
       -- But still respect allowed_in_yolo_mode = false

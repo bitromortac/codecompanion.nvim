@@ -27,9 +27,12 @@ T = new_set({
 
         h = require('tests.helpers')
         chat, tools = h.setup_chat_buffer()
+        -- Ensure config is mocked correctly for approvals
+        codecompanion.config.interactions.chat.tools = codecompanion.config.interactions.chat.tools or {}
       ]])
     end,
     post_case = function()
+
       child.lua([[
         _G.callback_results = {}
         _G.last_notify = nil

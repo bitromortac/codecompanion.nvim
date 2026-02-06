@@ -32,6 +32,28 @@ end
 ---@type CodeCompanion.Command[]
 return {
   {
+    cmd = "CodeCompanionAsyncMsg",
+    callback = function(opts)
+      local chat = require("codecompanion.interactions.chat")
+      local chat_buffer = chat.last_chat()
+
+      if not chat_buffer then
+        return vim.notify("No active chat buffer found", vim.log.levels.WARN)
+      end
+
+      if #opts.args == 0 then
+        return vim.notify("Please provide a message to inject", vim.log.levels.WARN)
+      end
+
+      chat_buffer:inject_message(opts.args)
+    end,
+    opts = {
+      desc = "Inject a message into the active CodeCompanion chat",
+      nargs = "+",
+    },
+  },
+
+  {
     cmd = "CodeCompanion",
     callback = function(opts)
       -- Detect the user calling a prompt from the prompt library
